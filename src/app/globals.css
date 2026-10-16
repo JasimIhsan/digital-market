@@ -1,26 +1,103 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Brand palette and type scale. Components only use these tokens, never raw hex. */
+@theme {
+  --color-ink: #0b0f1a;
+  --color-paper: #f7f8fa;
+
+  --color-primary: #5b5bf0;
+  --color-primary-soft: #8b8bf5;
+  --color-accent: #f5b94a;
+
+  --color-marketing: #ff6b6b;
+  --color-consulting: #2dd4a0;
+  --color-software: #4f8cff;
+
+  --animate-marquee: marquee 45s linear infinite;
+  --animate-drift: drift 18s ease-in-out infinite alternate;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes drift {
+    from {
+      transform: translate3d(-6%, -4%, 0) scale(1);
+    }
+    to {
+      transform: translate3d(6%, 8%, 0) scale(1.15);
+    }
+  }
 }
 
+/*
+ * Tone-aware semantic tokens. A section sets `tone-dark` or `tone-light`
+ * and every child resolves text-fg / text-muted / border-line / bg-surface
+ * against the nearest tone, so sections never hardcode light or dark colors.
+ * Tones set variables and text color only; backgrounds stay explicit (bg-ink,
+ * bg-paper) so they can be overridden or left transparent.
+ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --color-fg: var(--tone-fg);
+  --color-muted: var(--tone-muted);
+  --color-line: var(--tone-line);
+  --color-surface: var(--tone-surface);
+  --color-surface-strong: var(--tone-surface-strong);
+
+  /* Semantic states reuse brand hues so forms and lists never name a department. */
+  --color-success: var(--color-consulting);
+  --color-danger: var(--color-marketing);
 }
 
-@media (prefers-color-scheme: dark) {
+@utility tone-dark {
+  --tone-fg: var(--color-paper);
+  --tone-muted: #94a3b8;
+  --tone-line: rgb(255 255 255 / 0.08);
+  --tone-surface: rgb(255 255 255 / 0.04);
+  --tone-surface-strong: rgb(255 255 255 / 0.08);
+  color: var(--tone-fg);
+}
+
+@utility tone-light {
+  --tone-fg: var(--color-ink);
+  --tone-muted: #64748b;
+  --tone-line: rgb(11 15 26 / 0.08);
+  --tone-surface: rgb(11 15 26 / 0.03);
+  --tone-surface-strong: rgb(11 15 26 / 0.06);
+  color: var(--tone-fg);
+}
+
+:root {
+  @apply tone-dark;
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    scroll-behavior: auto;
+  }
+
+  .animate-marquee,
+  .animate-drift {
+    animation: none;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-ink font-sans antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-paper);
 }
